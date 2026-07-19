@@ -104,3 +104,4 @@ To make this production-ready:
 
 Everything else (auth, middleware, the Gemini integration, OCR) works
 unchanged on Vercel — only the database driver needs swapping.
+
