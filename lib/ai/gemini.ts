@@ -16,6 +16,7 @@ export const ScamCategorySchema = z.enum([
   "lottery_prize_scam",
   "job_investment_scam",
   "impersonation_scam",
+  "threat_or_harassment",
   "none",
 ]);
 
@@ -54,6 +55,7 @@ const RESPONSE_SCHEMA = {
         "lottery_prize_scam",
         "job_investment_scam",
         "impersonation_scam",
+        "threat_or_harassment",
         "none",
       ],
     },
@@ -86,6 +88,7 @@ You must specifically recognize these scam categories common in India:
 - lottery_prize_scam: fake lottery/prize/lucky draw winnings
 - job_investment_scam: fake work-from-home jobs, guaranteed-return investment schemes
 - impersonation_scam: impersonating banks, government departments, or companies
+- threat_or_harassment: direct threats of violence, death threats, sexual harassment, cyberbullying, or intimidation (e.g. "I will kill you", "I will hurt you", threatening/abusive language targeting a person)
 - none: message is legitimate/safe
 
 Be precise and evidence-based. Do not just say something is a scam because it
@@ -126,6 +129,33 @@ function getClient(): GoogleGenAI | null {
   return client;
 }
 
+function cleanApiErrorMessage(rawMessage: string): string {
+  let msg = rawMessage.trim();
+
+  // Try to extract from nested JSON error string if present
+  const jsonMatch = msg.match(/\{.*\}/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.error?.message) {
+        msg = parsed.error.message;
+      }
+    } catch {}
+  }
+
+  if (msg.includes("UNAUTHENTICATED") || msg.includes("invalid authentication credentials") || msg.includes("API key not valid") || msg.includes("401")) {
+    return "Invalid or unauthorized API key.";
+  }
+  if (msg.includes("RESOURCE_EXHAUSTED") || msg.includes("quota exceeded") || msg.includes("exceeded your current quota") || msg.includes("429")) {
+    return "Gemini API quota or rate limit exceeded.";
+  }
+  if (msg.includes("NOT_FOUND") || msg.includes("no longer available") || msg.includes("not found for API version") || msg.includes("404")) {
+    return "Selected Gemini model is not found or deprecated.";
+  }
+
+  return msg;
+}
+
 function heuristicFallback(input: string, reason: string): DetectionResult {
   const { signals, score, urls } = analyzeHeuristics(input);
   const matched = signals.filter((s) => s.matched);
@@ -139,7 +169,8 @@ function heuristicFallback(input: string, reason: string): DetectionResult {
     score >= 55 ? "critical" : score >= 35 ? "high" : score >= 15 ? "medium" : "low";
 
   let category: DetectionResult["category"] = "none";
-  if (matched.some((s) => s.id === "digital_arrest")) category = "digital_arrest_scam";
+  if (matched.some((s) => s.id === "threat")) category = "threat_or_harassment";
+  else if (matched.some((s) => s.id === "digital_arrest")) category = "digital_arrest_scam";
   else if (matched.some((s) => s.id === "upi_handle" || s.id === "upi_keywords"))
     category = "fake_upi_payment";
   else if (matched.some((s) => s.id === "lottery")) category = "lottery_prize_scam";
@@ -148,6 +179,15 @@ function heuristicFallback(input: string, reason: string): DetectionResult {
   else if (matched.some((s) => s.id === "impersonation")) category = "impersonation_scam";
   else if (urls.length && matched.some((s) => ["shortener", "suspicious_tld", "ip_host", "homoglyph"].includes(s.id)))
     category = "phishing_url";
+
+  let recommendedAction = "No strong scam indicators found by the offline analyzer. Still avoid sharing OTPs or personal/financial details with unverified senders.";
+  if (verdict === "scam") {
+    if (category === "threat_or_harassment") {
+      recommendedAction = "This message contains violent threats or harassment. Do not reply or engage with the sender. Take screenshots for evidence, block the sender immediately, and report the threat to your local police station or via the National Cyber Crime Portal (cybercrime.gov.in).";
+    } else {
+      recommendedAction = "Do not click any links, share OTPs/PINs, or make payments. Verify independently through official channels and report to cybercrime.gov.in or call 1930.";
+    }
+  }
 
   return {
     verdict,
@@ -161,10 +201,7 @@ function heuristicFallback(input: string, reason: string): DetectionResult {
             .map((m) => m.label)
             .join(", ")}.`
         : `It did not find strong rule-based scam indicators, but this is a lower-confidence, non-AI result.`),
-    recommendedAction:
-      verdict === "scam"
-        ? "Do not click any links, share OTPs/PINs, or make payments. Verify independently through official channels and report to cybercrime.gov.in or call 1930."
-        : "No strong scam indicators found by the offline analyzer. Still avoid sharing OTPs or personal/financial details with unverified senders.",
+    recommendedAction,
     source: "heuristic-fallback",
     heuristicScore: score,
     matchedSignals: matched.map((m) => m.label),
@@ -184,13 +221,13 @@ export async function detectScam(input: string): Promise<DetectionResult> {
   if (!ai) {
     return heuristicFallback(
       trimmed,
-      "GEMINI_API_KEY is not configured on the server."
+      "Offline Mode: GEMINI_API_KEY is not configured on the server."
     );
   }
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: buildPrompt(trimmed),
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
@@ -216,9 +253,10 @@ export async function detectScam(input: string): Promise<DetectionResult> {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Unknown Gemini API error.";
+    const cleanMessage = cleanApiErrorMessage(message);
     return heuristicFallback(
       trimmed,
-      `Gemini API request failed (${message}).`
+      `Offline Mode: Gemini API request failed (${cleanMessage}).`
     );
   }
 }

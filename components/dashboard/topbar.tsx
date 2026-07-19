@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShieldCheck, LayoutDashboard, ScanLine, FileText, Settings, LogOut } from "lucide-react";
+import { ShieldCheck, LayoutDashboard, ScanLine, FileText, Settings, LogOut, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
+  { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/scan", label: "Scan", icon: ScanLine },
   { href: "/dashboard/reports", label: "Reports", icon: FileText },
@@ -25,7 +26,7 @@ export function MobileTopbar() {
   return (
     <div className="md:hidden sticky top-0 z-30 border-b border-void-border bg-void/90 backdrop-blur-xl">
       <div className="flex items-center justify-between px-4 py-3">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-signal to-intel">
             <ShieldCheck className="h-4.5 w-4.5 text-white" />
           </div>
@@ -42,7 +43,7 @@ export function MobileTopbar() {
       </div>
       <nav className="flex overflow-x-auto px-3 pb-2 gap-1.5 no-scrollbar">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+          const active = href === "/" || href === "/dashboard" ? pathname === href : pathname.startsWith(href);
           return (
             <Link
               key={href}

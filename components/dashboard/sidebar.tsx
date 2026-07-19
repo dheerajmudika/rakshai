@@ -9,6 +9,7 @@ import {
   FileText,
   Settings,
   LogOut,
+  Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,14 +32,17 @@ export function Sidebar({ userName }: { userName: string }) {
 
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r border-void-border bg-void-panel/60 backdrop-blur-xl">
-      <div className="flex items-center gap-2.5 px-6 py-6">
+      <Link
+        href="/"
+        className="flex items-center gap-2.5 px-6 py-6 hover:opacity-80 transition-opacity"
+      >
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-signal to-intel shadow-glow">
           <ShieldCheck className="h-5 w-5 text-white" strokeWidth={2.2} />
         </div>
         <span className="font-display text-lg font-semibold tracking-tight text-white">
           Raksh<span className="text-gradient">AI</span>
         </span>
-      </div>
+      </Link>
 
       <nav className="flex-1 space-y-1 px-3">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
@@ -71,6 +75,13 @@ export function Sidebar({ userName }: { userName: string }) {
             <p className="truncate text-sm font-medium text-white">{userName}</p>
           </div>
         </div>
+        <Link
+          href="/"
+          className="mt-1 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
+        >
+          <Home className="h-4.5 w-4.5" />
+          Back to Home
+        </Link>
         <button
           onClick={handleLogout}
           className="mt-1 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/50 hover:text-threat-critical hover:bg-threat-critical/10 transition-all duration-200"

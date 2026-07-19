@@ -12,6 +12,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   lottery_prize_scam: "Lottery / Prize Scam",
   job_investment_scam: "Job / Investment Scam",
   impersonation_scam: "Impersonation Scam",
+  threat_or_harassment: "Threat / Harassment",
   none: "No Category",
 };
 

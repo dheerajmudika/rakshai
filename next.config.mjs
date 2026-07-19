@@ -17,7 +17,21 @@ const nextConfig = {
   // string (not a require), so it must be explicitly included or it will
   // be silently dropped from the deployed function.
   outputFileTracingIncludes: {
-    "app/api/scan/ocr/route": ["./node_modules/@tesseract.js-data/eng/**"],
+    "/api/scan/ocr": [
+      "./node_modules/@tesseract.js-data/eng/**",
+      "./node_modules/tesseract.js-core/**",
+      "./node_modules/tesseract.js/**",
+    ],
+    "app/api/scan/ocr/route": [
+      "./node_modules/@tesseract.js-data/eng/**",
+      "./node_modules/tesseract.js-core/**",
+      "./node_modules/tesseract.js/**",
+    ],
+    "/": [
+      "./node_modules/@tesseract.js-data/eng/**",
+      "./node_modules/tesseract.js-core/**",
+      "./node_modules/tesseract.js/**",
+    ],
   },
 };
 export default nextConfig;

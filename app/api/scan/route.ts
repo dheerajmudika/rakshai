@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       .values({
         userId: user.id,
         scanId: scan.id,
-        title: title?.trim() || `Scan report — ${new Date(scan.createdAt).toLocaleString()}`,
+        title: title?.trim() || `Scan report — ${new Date(scan.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`,
       })
       .returning();
     report = r;

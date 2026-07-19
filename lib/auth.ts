@@ -31,10 +31,45 @@ export async function verifyPassword(
 export async function getCurrentUser() {
   const session = await getSession();
   if (!session) return null;
+  
   const rows = await db
     .select()
     .from(schema.users)
     .where(eq(schema.users.id, session.sub))
     .limit(1);
-  return rows[0] ?? null;
+    
+  if (rows.length > 0) {
+    return rows[0];
+  }
+
+  // If the user exists in a verified JWT but not in the ephemeral database
+  // (e.g. on a Vercel serverless cold start / fresh container instance),
+  // auto-restore the user row so the session remains valid.
+  try {
+    const [newUser] = await db
+      .insert(schema.users)
+      .values({
+        id: session.sub,
+        name: session.name,
+        email: session.email,
+        passwordHash: "", // Placeholder password hash since they are already verified by JWT signature
+        role: session.role as any,
+      })
+      .returning();
+      
+    try {
+      await db.insert(schema.settings).values({ userId: newUser.id });
+    } catch {}
+    
+    return newUser;
+  } catch (err) {
+    console.error("Failed to auto-restore user session in ephemeral DB:", err);
+    // Fallback: query again in case of a race condition
+    const retryRows = await db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.id, session.sub))
+      .limit(1);
+    return retryRows[0] ?? null;
+  }
 }

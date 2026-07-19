@@ -49,6 +49,9 @@ const IMPERSONATION_KEYWORDS =
 const GENERIC_AI_TEXT_MARKERS =
   /(as an ai language model|i cannot verify|note: this is a simulated|disclaimer: for educational purposes)/i;
 
+const THREAT_KEYWORDS =
+  /(i\s+will\s+(kill|murder|hurt|harm|rape|shoot|stab|attack|beat)\s+(you|u|him|her|them|your|his|her)|kill\s+(you|u|yourself)|i'm\s+going\s+to\s+(kill|hurt|harm)|gonna\s+(kill|hurt|harm)|you\s+(will|are\s+going\s+to)\s+(die|suffer)|death\s+threat|i\s+know\s+where\s+you\s+live|watch\s+your\s+back|you're\s+dead)/i;
+
 export function extractUrls(text: string): string[] {
   return Array.from(new Set(text.match(URL_REGEX) ?? []));
 }
@@ -75,6 +78,7 @@ export function analyzeHeuristics(rawInput: string): {
     { id: "job_investment", label: "Job/investment scam phrasing", weight: 0.35, detail: "" },
     { id: "impersonation", label: "Authority/bank impersonation phrasing", weight: 0.3, detail: "" },
     { id: "ai_marker", label: "AI-generated boilerplate markers", weight: 0.15, detail: "" },
+    { id: "threat", label: "Violent threat / death threat language", weight: 0.85, detail: "" },
   ];
 
   const patternMap: Record<string, RegExp> = {
@@ -91,6 +95,7 @@ export function analyzeHeuristics(rawInput: string): {
     job_investment: JOB_INVESTMENT_SCAM_KEYWORDS,
     impersonation: IMPERSONATION_KEYWORDS,
     ai_marker: GENERIC_AI_TEXT_MARKERS,
+    threat: THREAT_KEYWORDS,
   };
 
   const signals: HeuristicSignal[] = checks.map((c) => {

@@ -20,6 +20,7 @@ export function RiskTrendChart({ data }: { data: TrendPoint[] }) {
   const formatted = data.map((d) => ({
     ...d,
     label: new Date(d.date).toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
       day: "2-digit",
       month: "short",
     }),

@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { db, schema } from "@/lib/db/client";
 import { ResultCard } from "@/components/scan/result-card";
 import { Card } from "@/components/ui/card";
+import { DeleteReportButton } from "@/components/dashboard/delete-report-button";
 
 export const dynamic = "force-dynamic";
 
@@ -31,18 +32,22 @@ export default async function ReportDetailPage({
 
   return (
     <div className="space-y-6">
-      <Link
-        href="/dashboard/reports"
-        className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to Reports
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link
+          href="/dashboard/reports"
+          className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Reports
+        </Link>
+        <DeleteReportButton reportId={report.id} />
+      </div>
 
       <div>
         <h1 className="font-display text-2xl font-semibold text-white">{report.title}</h1>
         <p className="mt-1 text-sm text-white/50">
           Saved on{" "}
           {new Date(report.createdAt).toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata",
             dateStyle: "long",
             timeStyle: "short",
           })}

@@ -7,10 +7,10 @@ const config: Config = {
     extend: {
       colors: {
         void: {
-          DEFAULT: "#05070F",
-          panel: "#0B1120",
-          card: "#0E1526",
-          border: "#1B2438",
+          DEFAULT: "#07050F",
+          panel: "#0D0A1E",
+          card: "#110D24",
+          border: "#1E1840",
         },
         signal: {
           DEFAULT: "#3B7BFF",
@@ -39,7 +39,10 @@ const config: Config = {
       },
       backgroundImage: {
         "grid-glow":
-          "radial-gradient(circle at 20% 20%, rgba(59,123,255,0.15), transparent 40%), radial-gradient(circle at 80% 0%, rgba(124,92,255,0.12), transparent 40%), radial-gradient(circle at 50% 100%, rgba(34,211,238,0.08), transparent 50%)",
+          "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(120,60,255,0.22), transparent 55%), radial-gradient(ellipse 70% 50% at 80% 5%, rgba(59,123,255,0.18), transparent 50%), radial-gradient(ellipse 60% 60% at 50% 100%, rgba(34,211,238,0.1), transparent 55%)",
+        "orb-purple": "radial-gradient(circle, rgba(120,60,255,0.35) 0%, transparent 70%)",
+        "orb-blue": "radial-gradient(circle, rgba(59,123,255,0.3) 0%, transparent 70%)",
+        "orb-cyan": "radial-gradient(circle, rgba(34,211,238,0.2) 0%, transparent 70%)",
       },
       boxShadow: {
         glow: "0 0 40px -10px rgba(59,123,255,0.4)",
@@ -63,12 +66,34 @@ const config: Config = {
           "0%": { backgroundPosition: "0% 50%" },
           "100%": { backgroundPosition: "200% 50%" },
         },
+        "orb-drift-1": {
+          "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(40px, -30px) scale(1.08)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.95)" },
+        },
+        "orb-drift-2": {
+          "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(-50px, 30px) scale(1.06)" },
+          "66%": { transform: "translate(30px, -25px) scale(0.97)" },
+        },
+        "orb-drift-3": {
+          "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
+          "50%": { transform: "translate(25px, 35px) scale(1.04)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "radar-sweep": "radar-sweep 4s linear infinite",
         "pulse-ring": "pulse-ring 2.4s cubic-bezier(0.4,0,0.6,1) infinite",
         float: "float 6s ease-in-out infinite",
         "border-flow": "border-flow 3s linear infinite",
+        "orb-drift-1": "orb-drift-1 18s ease-in-out infinite",
+        "orb-drift-2": "orb-drift-2 22s ease-in-out infinite",
+        "orb-drift-3": "orb-drift-3 15s ease-in-out infinite",
+        shimmer: "shimmer 3s linear infinite",
       },
     },
   },

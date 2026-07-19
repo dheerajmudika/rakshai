@@ -9,15 +9,21 @@ export async function GET() {
   if (isError(guard)) return guard.error;
   const { user } = guard;
 
-  const rows = await db
+  const isStaff = user.role === "police" || user.role === "bank";
+
+  const query = db
     .select({
       report: schema.reports,
       scan: schema.scans,
     })
     .from(schema.reports)
-    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id))
-    .where(eq(schema.reports.userId, user.id))
-    .orderBy(desc(schema.reports.createdAt));
+    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id));
+
+  if (!isStaff) {
+    query.where(eq(schema.reports.userId, user.id));
+  }
+
+  const rows = await query.orderBy(desc(schema.reports.createdAt));
 
   return jsonOk({
     reports: rows.map(({ report, scan }) => ({ ...report, scan })),
@@ -34,6 +40,8 @@ export async function POST(req: NextRequest) {
   const guard = await requireUser();
   if (isError(guard)) return guard.error;
   const { user } = guard;
+
+  const isStaff = user.role === "police" || user.role === "bank";
 
   let body: unknown;
   try {
@@ -54,7 +62,7 @@ export async function POST(req: NextRequest) {
     .where(eq(schema.scans.id, scanId))
     .limit(1);
   const scan = scanRows[0];
-  if (!scan || scan.userId !== user.id) {
+  if (!scan || (!isStaff && scan.userId !== user.id)) {
     return jsonError("Scan not found.", 404);
   }
 
@@ -72,7 +80,7 @@ export async function POST(req: NextRequest) {
     .values({
       userId: user.id,
       scanId,
-      title: title || `Scan report — ${new Date(scan.createdAt).toLocaleString()}`,
+      title: title || `Scan report — ${new Date(scan.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`,
       notes,
     })
     .returning();

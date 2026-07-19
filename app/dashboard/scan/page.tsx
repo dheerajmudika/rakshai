@@ -1,8 +1,17 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { ScanForm } from "@/components/scan/scan-form";
 
 export default function ScanPage() {
   return (
     <div className="space-y-6">
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white"
+      >
+        <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+      </Link>
+
       <div>
         <h1 className="font-display text-2xl font-semibold text-white">
           AI Scam Detector

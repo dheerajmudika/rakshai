@@ -31,6 +31,7 @@ export function RecentActivity({ scans }: { scans: Scan[] }) {
             <p className="mt-0.5 text-xs text-white/35">
               {categoryLabel(scan.category)} ·{" "}
               {new Date(scan.createdAt).toLocaleString("en-IN", {
+                timeZone: "Asia/Kolkata",
                 day: "2-digit",
                 month: "short",
                 hour: "2-digit",

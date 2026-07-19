@@ -1,62 +1,56 @@
-import { sqliteTable, text, real, integer } from "drizzle-orm/sqlite-core";
+import { pgTable, text, real, boolean, timestamp } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
 /**
- * RakshAI database schema (Drizzle ORM / SQLite for local dev).
- *
- * NOTE ON PRODUCTION (Vercel): Vercel's serverless functions have a
- * read-only, ephemeral filesystem, so a SQLite file cannot persist data
- * between requests in production. For a real deployment, point
- * DATABASE_URL at a hosted Postgres instance (Neon/Supabase/Vercel
- * Postgres all have free tiers) and swap the driver in lib/db/client.ts
- * from `better-sqlite3` to `postgres` (see comments there). The table
- * shapes below map 1:1 to Postgres with only trivial type changes.
+ * RakshAI database schema (Drizzle ORM / PostgreSQL for production).
  */
 
-export const users = sqliteTable("users", {
+export const users = pgTable("users", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  role: text("role", { enum: ["citizen", "police", "bank"] })
+  role: text("role")
+    .$type<"citizen" | "police" | "bank">()
     .notNull()
     .default("citizen"),
-  createdAt: text("created_at")
+  createdAt: timestamp("created_at", { mode: "string" })
     .notNull()
-    .default(sql`(current_timestamp)`),
+    .defaultNow(),
 });
 
-export const scans = sqliteTable("scans", {
+export const scans = pgTable("scans", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  inputType: text("input_type", {
-    enum: ["text", "url", "ocr_image", "ocr_pdf"],
-  })
+  inputType: text("input_type")
+    .$type<"text" | "url" | "ocr_image" | "ocr_pdf">()
     .notNull()
     .default("text"),
   inputText: text("input_text").notNull(),
   extractedText: text("extracted_text"),
-  verdict: text("verdict", { enum: ["scam", "safe"] }).notNull(),
+  verdict: text("verdict")
+    .$type<"scam" | "safe">()
+    .notNull(),
   confidence: real("confidence").notNull(),
-  riskLevel: text("risk_level", {
-    enum: ["low", "medium", "high", "critical"],
-  }).notNull(),
+  riskLevel: text("risk_level")
+    .$type<"low" | "medium" | "high" | "critical">()
+    .notNull(),
   category: text("category").notNull(),
   explanation: text("explanation").notNull(),
   action: text("action").notNull(),
   source: text("source").notNull().default("gemini"),
-  createdAt: text("created_at")
+  createdAt: timestamp("created_at", { mode: "string" })
     .notNull()
-    .default(sql`(current_timestamp)`),
+    .defaultNow(),
 });
 
-export const reports = sqliteTable("reports", {
+export const reports = pgTable("reports", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -69,12 +63,12 @@ export const reports = sqliteTable("reports", {
     .references(() => scans.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   notes: text("notes"),
-  createdAt: text("created_at")
+  createdAt: timestamp("created_at", { mode: "string" })
     .notNull()
-    .default(sql`(current_timestamp)`),
+    .defaultNow(),
 });
 
-export const settings = sqliteTable("settings", {
+export const settings = pgTable("settings", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -82,19 +76,21 @@ export const settings = sqliteTable("settings", {
     .notNull()
     .unique()
     .references(() => users.id, { onDelete: "cascade" }),
-  emailAlerts: integer("email_alerts", { mode: "boolean" })
+  emailAlerts: boolean("email_alerts")
     .notNull()
     .default(true),
-  smsAlerts: integer("sms_alerts", { mode: "boolean" }).notNull().default(false),
-  autoSaveReports: integer("auto_save_reports", { mode: "boolean" })
+  smsAlerts: boolean("sms_alerts")
+    .notNull()
+    .default(false),
+  autoSaveReports: boolean("auto_save_reports")
     .notNull()
     .default(true),
   riskSensitivity: text("risk_sensitivity")
     .notNull()
     .default("balanced"),
-  updatedAt: text("updated_at")
+  updatedAt: timestamp("updated_at", { mode: "string" })
     .notNull()
-    .default(sql`(current_timestamp)`),
+    .defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ many, one }) => ({

@@ -36,6 +36,9 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} font-body antialiased bg-void text-white`}
       >
+        {/* Star field and noise overlay for background effect */}
+        <div className="star-field" aria-hidden="true" />
+        <div className="noise-overlay pointer-events-none fixed inset-0 z-0 opacity-40" aria-hidden="true" />
         {children}
       </body>
     </html>

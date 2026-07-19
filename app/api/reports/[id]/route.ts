@@ -11,12 +11,20 @@ export async function GET(
   const { user } = guard;
   const { id } = await params;
 
-  const rows = await db
+  const isStaff = user.role === "police" || user.role === "bank";
+
+  const query = db
     .select({ report: schema.reports, scan: schema.scans })
     .from(schema.reports)
-    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id))
-    .where(and(eq(schema.reports.id, id), eq(schema.reports.userId, user.id)))
-    .limit(1);
+    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id));
+
+  if (isStaff) {
+    query.where(eq(schema.reports.id, id));
+  } else {
+    query.where(and(eq(schema.reports.id, id), eq(schema.reports.userId, user.id)));
+  }
+
+  const rows = await query.limit(1);
 
   if (!rows[0]) return jsonError("Report not found.", 404);
   return jsonOk({ report: { ...rows[0].report, scan: rows[0].scan } });
@@ -31,10 +39,18 @@ export async function DELETE(
   const { user } = guard;
   const { id } = await params;
 
-  const deleted = await db
-    .delete(schema.reports)
-    .where(and(eq(schema.reports.id, id), eq(schema.reports.userId, user.id)))
-    .returning({ id: schema.reports.id });
+  const isStaff = user.role === "police" || user.role === "bank";
+
+  const query = db
+    .delete(schema.reports);
+
+  if (isStaff) {
+    query.where(eq(schema.reports.id, id));
+  } else {
+    query.where(and(eq(schema.reports.id, id), eq(schema.reports.userId, user.id)));
+  }
+
+  const deleted = await query.returning({ id: schema.reports.id });
 
   if (!deleted.length) return jsonError("Report not found.", 404);
   return jsonOk({ success: true });
