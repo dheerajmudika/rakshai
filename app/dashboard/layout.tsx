@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { MobileTopbar } from "@/components/dashboard/topbar";
+import { RakshBot } from "@/components/dashboard/rakshbot";
 
 export default async function DashboardLayout({
   children,
@@ -25,6 +26,8 @@ export default async function DashboardLayout({
           {children}
         </main>
       </div>
+      <RakshBot />
     </div>
   );
 }
+

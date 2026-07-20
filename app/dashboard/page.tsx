@@ -15,6 +15,7 @@ import { RiskTrendChart } from "@/components/dashboard/risk-trend-chart";
 import { CategoryChart } from "@/components/dashboard/category-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { AwarenessTips } from "@/components/dashboard/awareness-tips";
+import { AchievementBadges } from "@/components/dashboard/achievement-badges";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,7 @@ export default async function DashboardOverviewPage() {
   const scamsDetected = allScans.filter((s) => s.verdict === "scam").length;
   const safeScans = totalScans - scamsDetected;
   const detectionRate = totalScans > 0 ? Math.round((scamsDetected / totalScans) * 100) : 0;
+  const urlScans = allScans.filter((s) => s.inputType === "url").length;
 
   const safetyScore = computeSafetyScore(totalScans, scamsDetected, reportCount);
   const { label: scoreLabel, color: scoreColor, glow: scoreGlow } = safetyScoreLabel(safetyScore);
@@ -142,6 +144,14 @@ export default async function DashboardOverviewPage() {
           tone="intel"
         />
       </div>
+
+      {/* Achievement Badges */}
+      <AchievementBadges
+        totalScans={totalScans}
+        scamsDetected={scamsDetected}
+        reportCount={reportCount}
+        urlScans={urlScans}
+      />
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

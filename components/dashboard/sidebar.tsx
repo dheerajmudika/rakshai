@@ -10,6 +10,9 @@ import {
   Settings,
   LogOut,
   Home,
+  Map,
+  LifeBuoy,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +20,8 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/scan", label: "Scan Detector", icon: ScanLine },
   { href: "/dashboard/reports", label: "Reports", icon: FileText },
+  { href: "/dashboard/heatmap", label: "Scam Heatmap", icon: Map },
+  { href: "/dashboard/help", label: "Help Guide", icon: LifeBuoy },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
@@ -75,6 +80,14 @@ export function Sidebar({ userName }: { userName: string }) {
             <p className="truncate text-sm font-medium text-white">{userName}</p>
           </div>
         </div>
+        <Link
+          href="/stats"
+          target="_blank"
+          className="mt-1 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
+        >
+          <BarChart3 className="h-4.5 w-4.5" />
+          Community Stats
+        </Link>
         <Link
           href="/"
           className="mt-1 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
