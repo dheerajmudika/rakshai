@@ -133,9 +133,9 @@ export function analyzeHeuristics(rawInput: string): {
     };
   });
 
-  const maxScore = signals.reduce((sum, s) => sum + s.weight, 0);
-  const rawScore = signals.reduce((sum, s) => sum + (s.matched ? s.weight : 0), 0);
-  const score = Math.round((rawScore / maxScore) * 100);
+  const matched = signals.filter((s) => s.matched);
+  const rawScore = matched.reduce((sum, s) => sum + s.weight, 0);
+  const score = matched.length > 0 ? Math.min(100, Math.round(rawScore * 100)) : 0;
 
   return { signals, score, urls };
 }
