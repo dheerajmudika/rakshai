@@ -196,48 +196,6 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <div className="space-y-2.5">
-          <Label>Register As</Label>
-          <div className="grid grid-cols-1 gap-2.5">
-            {roles.map(({ id, title, desc, icon: Icon }) => {
-              const active = role === id;
-              return (
-                <button
-                  type="button"
-                  key={id}
-                  onClick={() => setRole(id)}
-                  className={cn(
-                    "flex items-center gap-3.5 rounded-xl border px-4 py-3 text-left transition-all duration-300",
-                    active
-                      ? "border-signal/50 bg-signal/10 shadow-glow"
-                      : "border-void-border bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-                      active
-                        ? "bg-gradient-to-br from-signal to-intel text-white"
-                        : "bg-white/5 text-white/50"
-                    )}
-                  >
-                    <Icon className="h-4.5 w-4.5" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-white">{title}</p>
-                    <p className="text-xs text-white/40">{desc}</p>
-                  </div>
-                  {active && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-signal text-white">
-                      <Check className="h-3 w-3" strokeWidth={3} />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         <Button type="submit" size="lg" className="w-full" disabled={loading}>
           {loading ? (
             <>
