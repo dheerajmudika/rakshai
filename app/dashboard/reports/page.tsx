@@ -9,17 +9,13 @@ export default async function ReportsPage() {
   const user = await getCurrentUser();
   const isStaff = user?.role === "police" || user?.role === "bank";
 
-  const query = db
-    .select({ report: schema.reports, scan: schema.scans })
-    .from(schema.reports)
-    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id));
-
-  if (user && !isStaff) {
-    query.where(eq(schema.reports.userId, user.id));
-  }
-
   const rows = user
-    ? await query.orderBy(desc(schema.reports.createdAt))
+    ? await db
+        .select({ report: schema.reports, scan: schema.scans })
+        .from(schema.reports)
+        .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id))
+        .where(isStaff ? undefined : eq(schema.reports.userId, user.id))
+        .orderBy(desc(schema.reports.createdAt))
     : [];
 
   return (

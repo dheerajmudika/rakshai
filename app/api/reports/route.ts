@@ -11,19 +11,15 @@ export async function GET() {
 
   const isStaff = user.role === "police" || user.role === "bank";
 
-  const query = db
+  const rows = await db
     .select({
       report: schema.reports,
       scan: schema.scans,
     })
     .from(schema.reports)
-    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id));
-
-  if (!isStaff) {
-    query.where(eq(schema.reports.userId, user.id));
-  }
-
-  const rows = await query.orderBy(desc(schema.reports.createdAt));
+    .innerJoin(schema.scans, eq(schema.reports.scanId, schema.scans.id))
+    .where(isStaff ? undefined : eq(schema.reports.userId, user.id))
+    .orderBy(desc(schema.reports.createdAt));
 
   return jsonOk({
     reports: rows.map(({ report, scan }) => ({ ...report, scan })),

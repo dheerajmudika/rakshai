@@ -9,15 +9,11 @@ export async function GET() {
 
   const isStaff = user.role === "police" || user.role === "bank";
 
-  const query = db
+  const scans = await db
     .select()
-    .from(schema.scans);
-
-  if (!isStaff) {
-    query.where(eq(schema.scans.userId, user.id));
-  }
-
-  const scans = await query.orderBy(desc(schema.scans.createdAt));
+    .from(schema.scans)
+    .where(isStaff ? undefined : eq(schema.scans.userId, user.id))
+    .orderBy(desc(schema.scans.createdAt));
 
   const header = ["Date (IST)", "Verdict", "Risk Level", "Category", "Confidence %", "Source", "Input (first 120 chars)"];
 

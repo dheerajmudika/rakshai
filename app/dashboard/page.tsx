@@ -44,28 +44,21 @@ export default async function DashboardOverviewPage() {
   const user = await getCurrentUser();
   const isStaff = user?.role === "police" || user?.role === "bank";
 
-  let scansQuery = db
-    .select()
-    .from(schema.scans);
-
-  if (user && !isStaff) {
-    scansQuery.where(eq(schema.scans.userId, user.id));
-  }
-
   const allScans = user
-    ? await scansQuery.orderBy(desc(schema.scans.createdAt))
+    ? await db
+        .select()
+        .from(schema.scans)
+        .where(isStaff ? undefined : eq(schema.scans.userId, user.id))
+        .orderBy(desc(schema.scans.createdAt))
     : [];
 
-  let reportCountQuery = db
-    .select({ id: schema.reports.id })
-    .from(schema.reports);
-
-  if (user && !isStaff) {
-    reportCountQuery.where(eq(schema.reports.userId, user.id));
-  }
-
   const reportCount = user
-    ? (await reportCountQuery).length
+    ? (
+        await db
+          .select({ id: schema.reports.id })
+          .from(schema.reports)
+          .where(isStaff ? undefined : eq(schema.reports.userId, user.id))
+      ).length
     : 0;
 
   const totalScans = allScans.length;

@@ -22,15 +22,10 @@ export async function GET(req: NextRequest) {
     conditions.push(eq(schema.scans.verdict, verdict));
   }
 
-  const query = db
+  const rows = await db
     .select()
-    .from(schema.scans);
-
-  if (conditions.length > 0) {
-    query.where(and(...conditions));
-  }
-
-  const rows = await query
+    .from(schema.scans)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(schema.scans.createdAt))
     .limit(limit);
 
