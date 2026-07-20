@@ -8,6 +8,8 @@ import {
   TrendingUp,
   Globe,
 } from "lucide-react";
+import { db, schema } from "@/lib/db/client";
+import { sql } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -28,15 +30,40 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 async function getStats() {
   try {
-    const base =
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const res = await fetch(`${base}/api/public/stats`, {
-      cache: "no-store",
-    });
-    return res.json();
-  } catch {
+    const [totalScans] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.scans);
+    const [scamsDetected] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.scans)
+      .where(sql`verdict = 'scam'`);
+    const [totalReports] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.reports);
+    const [totalUsers] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(schema.users);
+
+    const categoryRows = await db
+      .select({
+        category: schema.scans.category,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(schema.scans)
+      .where(sql`verdict = 'scam'`)
+      .groupBy(schema.scans.category)
+      .orderBy(sql`count(*) desc`)
+      .limit(6);
+
+    return {
+      totalScans: totalScans?.count ?? 0,
+      scamsDetected: scamsDetected?.count ?? 0,
+      totalReports: totalReports?.count ?? 0,
+      totalUsers: totalUsers?.count ?? 0,
+      topCategories: categoryRows || [],
+    };
+  } catch (err) {
+    console.error("Failed to query public stats:", err);
     return {
       totalScans: 0,
       scamsDetected: 0,
