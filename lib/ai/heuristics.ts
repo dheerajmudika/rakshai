@@ -52,6 +52,15 @@ const BANK_TRANSFER_KEYWORDS =
 const MONEY_REQUEST_KEYWORDS =
   /(need\s*(rs\.?|₹)?\s*\d+|transfer\s*(rs\.?|₹)?\s*\d+|send\s*(rs\.?|₹)?\s*\d+|borrow\s*(rs\.?|₹)?\s*\d+|urgently\s*need\s*(rs\.?|₹)?\s*\d+)/i;
 
+const BETTING_GAMBLING_KEYWORDS =
+  /(1xbet|bet365|betting|casino|color\s*prediction|fastwin|rummy|gambling|lottery|win\s*cash|double\s*earnings|ipl\s*bet)/i;
+
+const COUNTERFEIT_KEYWORDS =
+  /(fake\s*app|install\s*apk|download\s*apk|duplicate\s*product|heavy\s*discount\s*offer|clearance\s*sale\s*90|Tata\s*gift|Amazon\s*anniversary|free\s*gift\s*link)/i;
+
+const BLACKMAIL_EXTORTION_KEYWORDS =
+  /(blackmail|pay\s*money\s*or\s*i\s*will|share\s*(your\s*)?(morphed\s*)?video|morph\s*photo|viral\s*your\s*video|extortion|leak\s*your\s*photos|pay\s*me\s*otherwise)/i;
+
 const GENERIC_AI_TEXT_MARKERS =
   /(as an ai language model|i cannot verify|note: this is a simulated|disclaimer: for educational purposes)/i;
 
@@ -85,6 +94,9 @@ export function analyzeHeuristics(rawInput: string): {
     { id: "impersonation", label: "Authority/bank impersonation phrasing", weight: 0.3, detail: "" },
     { id: "bank_details", label: "Bank details / transfer fields", weight: 0.4, detail: "" },
     { id: "money_request", label: "Direct money transfer request", weight: 0.35, detail: "" },
+    { id: "betting", label: "Illegal gambling or betting brand", weight: 0.6, detail: "" },
+    { id: "counterfeit", label: "Counterfeit store / fake giveaway bait", weight: 0.45, detail: "" },
+    { id: "blackmail", label: "Blackmail or sextortion threat language", weight: 0.7, detail: "" },
     { id: "ai_marker", label: "AI-generated boilerplate markers", weight: 0.15, detail: "" },
     { id: "threat", label: "Violent threat / death threat language", weight: 0.85, detail: "" },
   ];
@@ -104,6 +116,9 @@ export function analyzeHeuristics(rawInput: string): {
     impersonation: IMPERSONATION_KEYWORDS,
     bank_details: BANK_TRANSFER_KEYWORDS,
     money_request: MONEY_REQUEST_KEYWORDS,
+    betting: BETTING_GAMBLING_KEYWORDS,
+    counterfeit: COUNTERFEIT_KEYWORDS,
+    blackmail: BLACKMAIL_EXTORTION_KEYWORDS,
     ai_marker: GENERIC_AI_TEXT_MARKERS,
     threat: THREAT_KEYWORDS,
   };

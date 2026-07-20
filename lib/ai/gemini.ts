@@ -170,13 +170,16 @@ function heuristicFallback(input: string, reason: string): DetectionResult {
 
   let category: DetectionResult["category"] = "none";
   if (matched.some((s) => s.id === "threat")) category = "threat_or_harassment";
+  else if (matched.some((s) => s.id === "blackmail")) category = "threat_or_harassment";
   else if (matched.some((s) => s.id === "digital_arrest")) category = "digital_arrest_scam";
   else if (matched.some((s) => s.id === "upi_handle" || s.id === "upi_keywords"))
     category = "fake_upi_payment";
   else if (matched.some((s) => s.id === "lottery")) category = "lottery_prize_scam";
   else if (matched.some((s) => s.id === "job_investment")) category = "job_investment_scam";
+  else if (matched.some((s) => s.id === "betting")) category = "phishing_url";
   else if (matched.some((s) => s.id === "credential_harvest")) category = "phishing_url";
   else if (matched.some((s) => s.id === "impersonation")) category = "impersonation_scam";
+  else if (matched.some((s) => s.id === "counterfeit")) category = "impersonation_scam";
   else if (matched.some((s) => s.id === "bank_details" || s.id === "money_request"))
     category = "impersonation_scam";
   else if (urls.length && matched.some((s) => ["shortener", "suspicious_tld", "ip_host", "homoglyph"].includes(s.id)))

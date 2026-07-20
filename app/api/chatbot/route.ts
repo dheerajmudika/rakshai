@@ -142,6 +142,71 @@ function getOfflineReply(message: string, history: { role: string; content: stri
     );
   }
 
+  // 5a. Betting & Gambling Scams
+  if (
+    query.includes("bet") ||
+    query.includes("gambling") ||
+    query.includes("casino") ||
+    query.includes("1xbet") ||
+    query.includes("rummy") ||
+    query.includes("win cash") ||
+    query.includes("prediction")
+  ) {
+    if (hasTopicInHistory("1xbet") || hasTopicInHistory("betting") || hasTopicInHistory("gambling")) {
+      return (
+        "⚠️ Friendly reminder: Online gambling is rigged against you. Scammers use these sites to harvest credit cards and bank passwords. " +
+        "If you deposited money and cannot withdraw it, do NOT deposit more to 'unlock' it. File a complaint on cybercrime.gov.in immediately."
+      );
+    }
+    return (
+      "🎲 Online betting sites (like 1xBet, Bet365, Fastwin, and color prediction apps) are highly risky and mostly illegal in India. " +
+      "Many of these platforms are manipulated to lock your deposits, refuse withdrawals, or steal card details.\n\n" +
+      "⚠️ Rule: Never share card details or deposit money on unverified betting sites. If you lost money, immediately report it to your bank and file a complaint on cybercrime.gov.in."
+    );
+  }
+
+  // 5b. Counterfeit and Fake Products/Apps
+  if (
+    query.includes("fake") ||
+    query.includes("counterfeit") ||
+    query.includes("apk") ||
+    query.includes("discount") ||
+    query.includes("clearance") ||
+    query.includes("duplicate")
+  ) {
+    if (hasTopicInHistory("apk") || hasTopicInHistory("counterfeit")) {
+      return (
+        "⚠️ Remember: Always inspect the URL. If the discount is 'too good to be true' (like a ₹90,000 iPhone for ₹3,000), it is a scam. " +
+        "Never download .APK files shared on WhatsApp/SMS — they contain Trojans that steal UPI details."
+      );
+    }
+    return (
+      "🛍️ Counterfeit scams involve fake e-commerce sites (copying official brands) selling items at huge discounts, or fake APK apps shared on chat apps claiming to be bank helper apps.\n\n" +
+      "⚠️ Rule: Shop only from verified platforms. Never install APK files shared in chats, as they contain malware that steals OTPs/PINs. Always check the domain URL carefully before paying."
+    );
+  }
+
+  // 5c. Blackmail, Sextortion, and morphing threats
+  if (
+    query.includes("blackmail") ||
+    query.includes("threaten") ||
+    query.includes("extortion") ||
+    query.includes("morph") ||
+    query.includes("sextortion")
+  ) {
+    if (hasTopicInHistory("blackmail") || hasTopicInHistory("sextortion")) {
+      return (
+        "⚠️ Important: Do NOT pay them. Paying only makes them blackmail you more. " +
+        "Deactivate/set your social media accounts to private, preserve screenshots of their chat/number, and report to police or file a case on cybercrime.gov.in."
+      );
+    }
+    return (
+      "📞 If someone is blackmailing you online (e.g., sharing morphed photos/videos or demanding extortion money):\n\n" +
+      "⚠️ Rule: Do NOT pay them anything. Paying only makes them demand more. Block them, set your social media to private, " +
+      "take screenshots for evidence, and report immediately to 1930 or file a complaint on cybercrime.gov.in under the 'Women/Children Cyber Crime' section."
+    );
+  }
+
   // 6. Conversational Greetings
   if (query.match(/^(hi|hello|hey|greetings|good morning|good afternoon)/)) {
     return (
