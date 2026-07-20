@@ -82,7 +82,6 @@ export function Sidebar({ userName }: { userName: string }) {
         </div>
         <Link
           href="/stats"
-          target="_blank"
           className="mt-1 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
         >
           <BarChart3 className="h-4.5 w-4.5" />
