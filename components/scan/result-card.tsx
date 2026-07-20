@@ -33,7 +33,6 @@ export function ResultCard({
         <VerdictBadge verdict={result.verdict} />
         <RiskBadge level={result.riskLevel} />
         <Badge tone="signal">{categoryLabel(result.category)}</Badge>
-        <Badge tone="intel">{result.confidence}% confidence</Badge>
         {result.source === "heuristic-fallback" && (
           <Badge tone="cyan">Heuristic Rule Analysis</Badge>
         )}
