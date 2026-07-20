@@ -35,7 +35,7 @@ export function ResultCard({
         <Badge tone="signal">{categoryLabel(result.category)}</Badge>
         <Badge tone="intel">{result.confidence}% confidence</Badge>
         {result.source === "heuristic-fallback" && (
-          <Badge tone="cyan">Offline heuristic mode</Badge>
+          <Badge tone="cyan">Heuristic Rule Analysis</Badge>
         )}
       </div>
 

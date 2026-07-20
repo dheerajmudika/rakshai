@@ -191,18 +191,27 @@ function heuristicFallback(input: string, reason: string): DetectionResult {
     }
   }
 
+  let explanation = "";
+  if (verdict === "scam") {
+    if (matched.length > 0) {
+      explanation = `Our security analyzer detected the following high-risk indicators: ${matched.map((m) => m.label.toLowerCase()).join(", ")}. The combination of these patterns strongly indicates a potential ${category === "none" ? "scam" : category.replace(/_/g, " ")}.`;
+    } else {
+      explanation = `Our security analyzer flagged this message as highly suspicious based on heuristic risk profiling.`;
+    }
+  } else {
+    if (matched.length > 0) {
+      explanation = `Although some minor patterns were detected (${matched.map((m) => m.label.toLowerCase()).join(", ")}), they do not present a high probability of a scam. However, always exercise caution.`;
+    } else {
+      explanation = `No suspicious indicators or scam patterns were detected in the analyzed content.`;
+    }
+  }
+
   return {
     verdict,
     confidence: Math.max(50, Math.min(95, score)),
     riskLevel,
     category,
-    explanation:
-      `${reason} Falling back to RakshAI's offline rule-based analyzer. ` +
-      (matched.length
-        ? `It flagged ${matched.length} suspicious signal(s): ${matched
-            .map((m) => m.label)
-            .join(", ")}.`
-        : `It did not find strong rule-based scam indicators, but this is a lower-confidence, non-AI result.`),
+    explanation,
     recommendedAction,
     source: "heuristic-fallback",
     heuristicScore: score,
