@@ -177,6 +177,8 @@ function heuristicFallback(input: string, reason: string): DetectionResult {
   else if (matched.some((s) => s.id === "job_investment")) category = "job_investment_scam";
   else if (matched.some((s) => s.id === "credential_harvest")) category = "phishing_url";
   else if (matched.some((s) => s.id === "impersonation")) category = "impersonation_scam";
+  else if (matched.some((s) => s.id === "bank_details" || s.id === "money_request"))
+    category = "impersonation_scam";
   else if (urls.length && matched.some((s) => ["shortener", "suspicious_tld", "ip_host", "homoglyph"].includes(s.id)))
     category = "phishing_url";
 

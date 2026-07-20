@@ -44,7 +44,13 @@ const JOB_INVESTMENT_SCAM_KEYWORDS =
   /(work\s*from\s*home\s*job|earn\s*(₹|rs\.?)?\s*\d{3,}\s*per\s*day|investment\s*(plan|scheme)\s*guarantee|double\s*your\s*money|crypto\s*trading\s*bot|part[- ]?time\s*job\s*offer)/i;
 
 const IMPERSONATION_KEYWORDS =
-  /(dear\s*customer|this\s*is\s*(from\s*)?(bank|police|income\s*tax|customs)\s*department|official\s*(notice|communication)\s*from)/i;
+  /(dear\s*customer|this\s*is\s*(from\s*)?(bank|police|income\s*tax|customs)\s*department|official\s*(notice|communication)\s*from|this\s*is\s*my\s*new\s*number|lost\s*my\s*phone|lost\s*my\s*mobile|my\s*new\s*phone\s*number|changed\s*my\s*number|new\s*whatsapp)/i;
+
+const BANK_TRANSFER_KEYWORDS =
+  /(a\/c\s*(no\.?)?|account\s*(number|no\.?)|ifsc|transfer\s*to\s*(my\s*)?account|bank:\s*\w+|send\s*to:\s*name|holder\s*name|acc\s*no|account\s*details)/i;
+
+const MONEY_REQUEST_KEYWORDS =
+  /(need\s*(rs\.?|₹)?\s*\d+|transfer\s*(rs\.?|₹)?\s*\d+|send\s*(rs\.?|₹)?\s*\d+|borrow\s*(rs\.?|₹)?\s*\d+|urgently\s*need\s*(rs\.?|₹)?\s*\d+)/i;
 
 const GENERIC_AI_TEXT_MARKERS =
   /(as an ai language model|i cannot verify|note: this is a simulated|disclaimer: for educational purposes)/i;
@@ -77,6 +83,8 @@ export function analyzeHeuristics(rawInput: string): {
     { id: "credential_harvest", label: "Credential-harvesting phishing phrasing", weight: 0.4, detail: "" },
     { id: "job_investment", label: "Job/investment scam phrasing", weight: 0.35, detail: "" },
     { id: "impersonation", label: "Authority/bank impersonation phrasing", weight: 0.3, detail: "" },
+    { id: "bank_details", label: "Bank details / transfer fields", weight: 0.4, detail: "" },
+    { id: "money_request", label: "Direct money transfer request", weight: 0.35, detail: "" },
     { id: "ai_marker", label: "AI-generated boilerplate markers", weight: 0.15, detail: "" },
     { id: "threat", label: "Violent threat / death threat language", weight: 0.85, detail: "" },
   ];
@@ -94,6 +102,8 @@ export function analyzeHeuristics(rawInput: string): {
     credential_harvest: CREDENTIAL_HARVEST_KEYWORDS,
     job_investment: JOB_INVESTMENT_SCAM_KEYWORDS,
     impersonation: IMPERSONATION_KEYWORDS,
+    bank_details: BANK_TRANSFER_KEYWORDS,
+    money_request: MONEY_REQUEST_KEYWORDS,
     ai_marker: GENERIC_AI_TEXT_MARKERS,
     threat: THREAT_KEYWORDS,
   };
