@@ -18,6 +18,62 @@ Always be helpful, clear and concise. Use simple language. When relevant, mentio
 
 Do not scan messages — direct users to the Scan Detector for that. Keep replies under 200 words.`;
 
+// Intelligent Offline Fallback Answer Bank for hackathon presentations
+function getOfflineReply(message: string): string {
+  const query = message.toLowerCase();
+
+  if (query.includes("arrest") || query.includes("police") || query.includes("cbi") || query.includes("customs") || query.includes("threat")) {
+    return (
+      "🚨 A 'Digital Arrest' scam is when fraudsters impersonate police, CBI, or customs officials over video calls (WhatsApp/Skype). " +
+      "They claim you are under 'digital arrest' for illegal packages or money laundering and demand money to clear your name.\n\n" +
+      "⚠️ Remember: Indian law enforcement NEVER conducts arrests or investigations over video calls, and there is no such concept as 'digital arrest'. " +
+      "Do not pay anything. Block them immediately and report on cybercrime.gov.in or call 1930."
+    );
+  }
+
+  if (query.includes("upi") || query.includes("qr") || query.includes("scan") || query.includes("payment") || query.includes("receive")) {
+    return (
+      "💸 UPI fraud typically involves scammers sending 'Collect Requests' or sharing QR codes, claiming you need to scan them or enter your UPI PIN to 'receive' money.\n\n" +
+      "⚠️ Crucial Rule: You NEVER need to enter your UPI PIN or scan a QR code to receive money. " +
+      "UPI PIN is only used for sending money. If you have been scammed, immediately contact your bank to freeze transactions and report to 1930."
+    );
+  }
+
+  if (query.includes("otp") || query.includes("pin") || query.includes("cvv") || query.includes("password")) {
+    return (
+      "🔑 One-Time Passwords (OTPs) and banking PINs are personal security codes. " +
+      "Scammers will impersonate bank staff, delivery agents, or customer support to ask for your OTP to verify your account or cancel an illegal charge.\n\n" +
+      "⚠️ Rule: Never share OTPs, PINs, or CVVs with anyone. Banks will never ask for them. " +
+      "If you shared one, block your card/account immediately via your banking app."
+    );
+  }
+
+  if (query.includes("job") || query.includes("part-time") || query.includes("part time") || query.includes("task") || query.includes("investment") || query.includes("earn")) {
+    return (
+      "💼 Part-time job and fake investment scams offer high income for simple tasks (like liking YouTube videos or reviewing hotels) or promise guaranteed returns on crypto/stocks.\n\n" +
+      "⚠️ Scammer Pattern: They ask you to join Telegram channels and deposit money to unlock higher earnings. " +
+      "This is a Ponzi scam. Real jobs never require you to pay. Stop communicating with them immediately."
+    );
+  }
+
+  if (query.includes("helpline") || query.includes("complaint") || query.includes("number") || query.includes("report") || query.includes("cybercrime")) {
+    return (
+      "🚨 If you faced cybercrime or digital fraud in India:\n" +
+      "1. Call the National Cyber Crime Helpline at 1930 immediately (available 24/7).\n" +
+      "2. Register an official complaint online at cybercrime.gov.in.\n" +
+      "3. Contact your bank's fraud unit immediately to block beneficiary accounts and request a chargeback. " +
+      "Reporting within 24 hours increases recovery chances."
+    );
+  }
+
+  // Default fallback answer
+  return (
+    "👋 I'm RakshBot, your digital safety assistant! I can guide you on digital safety and cybersecurity rules.\n\n" +
+    "Ask me about: 'Digital Arrest scams', 'UPI/QR code safety', 'OTP safety', 'How to file cyber complaints', or 'Job scams'.\n\n" +
+    "For urgent help with a scam, call 1930 or visit cybercrime.gov.in."
+  );
+}
+
 export async function POST(req: NextRequest) {
   let body: unknown;
   try {
@@ -34,10 +90,7 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey === "your_api_key_here") {
-    return jsonOk({
-      reply:
-        "RakshBot is currently offline (API key not configured). For cybercrime help, call 1930 or visit cybercrime.gov.in",
-    });
+    return jsonOk({ reply: getOfflineReply(message) });
   }
 
   try {
@@ -61,17 +114,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return jsonOk({ reply: response.text ?? "Sorry, I couldn't generate a response." });
+    return jsonOk({ reply: response.text ?? getOfflineReply(message) });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    if (msg.includes("quota") || msg.includes("429")) {
-      return jsonOk({
-        reply:
-          "RakshBot is temporarily unavailable (quota exceeded). For urgent help, call the Cyber Crime Helpline: 1930 or visit cybercrime.gov.in",
-      });
-    }
-    return jsonOk({
-      reply: "RakshBot encountered an error. For cybercrime help, call 1930 or visit cybercrime.gov.in",
-    });
+    // Log error internally but always fall back gracefully to the offline bank
+    console.error("RakshBot API error:", msg);
+    return jsonOk({ reply: getOfflineReply(message) });
   }
 }
