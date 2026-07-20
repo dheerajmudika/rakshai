@@ -48,7 +48,7 @@ export default async function DashboardOverviewPage() {
     ? await db
         .select()
         .from(schema.scans)
-        .where(isStaff ? undefined : eq(schema.scans.userId, user.id))
+        .where(eq(schema.scans.userId, user.id))
         .orderBy(desc(schema.scans.createdAt))
     : [];
 
@@ -57,7 +57,7 @@ export default async function DashboardOverviewPage() {
         await db
           .select({ id: schema.reports.id })
           .from(schema.reports)
-          .where(isStaff ? undefined : eq(schema.reports.userId, user.id))
+          .where(eq(schema.reports.userId, user.id))
       ).length
     : 0;
 
