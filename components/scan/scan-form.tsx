@@ -31,6 +31,13 @@ export function ScanForm() {
     setScanId(null);
   }
 
+  function clearAll() {
+    reset();
+    setText("");
+    setUrl("");
+    setFile(null);
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     reset();
@@ -225,7 +232,14 @@ export function ScanForm() {
             className="space-y-3"
           >
             <ResultCard result={result} extractedText={extractedText} />
-            <div className="flex justify-end">
+            <div className="flex gap-2.5 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={clearAll}
+              >
+                <X className="h-4 w-4" /> Scan Another
+              </Button>
               <Button
                 type="button"
                 variant="secondary"
