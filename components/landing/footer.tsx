@@ -5,10 +5,10 @@ const columns = [
   {
     title: "Platform",
     links: [
-      { label: "AI Scan Center", href: "/scan-center" },
+      { label: "AI Scan Center", href: "/dashboard/scan" },
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Command Center", href: "/command-center" },
-      { label: "Awareness Hub", href: "#awareness" },
+      { label: "Command Center", href: "/dashboard/reports" },
+      { label: "Community Stats", href: "/stats" },
     ],
   },
   {
